@@ -1,15 +1,11 @@
-package com.example.demo.models;
+package com.example.demo.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
 @Table(name = "question")
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class Question {
     @Id
     @Column(name = "id")
@@ -23,7 +19,15 @@ public class Question {
     @JoinColumn(name = "survey_id", referencedColumnName = "id")
     private Survey survey;
 
-    public Question(String text) {
-        this.text = text;
+    @Column(name = "some_order")
+    private int some_order;
+
+    @Override
+    public String toString() {
+        return "Question{" +
+                "id=" + id +
+                ", text='" + text + '\'' +
+                ", some_order=" + some_order +
+                '}';
     }
 }

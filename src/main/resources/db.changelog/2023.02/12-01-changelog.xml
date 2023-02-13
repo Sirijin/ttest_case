@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.17.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+
+    <changeSet id="1676194528518-1" author="Pocht (generated)">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="question"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="question">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_question"/>
+            </column>
+            <column name="text" type="VARCHAR(255)"/>
+            <column name="survey_id" type="INT"/>
+            <column name="some_order" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1676194528518-2" author="Pocht (generated)">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="survey"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="survey">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_survey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="start_date" type="DATETIME"/>
+            <column name="end_date" type="DATETIME"/>
+            <column name="active" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1676194528518-3" author="Pocht (generated)">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyTableName="question" foreignKeyName="survey_id"/>
+            </not>
+        </preConditions>
+
+        <addForeignKeyConstraint baseColumnNames="survey_id" baseTableName="question"
+                                 constraintName="FK_QUESTION_ON_SURVEY" referencedColumnNames="id"
+                                 referencedTableName="survey"/>
+    </changeSet>
+
+</databaseChangeLog>
