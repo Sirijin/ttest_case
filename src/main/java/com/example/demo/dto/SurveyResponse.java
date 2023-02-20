@@ -1,19 +1,14 @@
 package com.example.demo.dto;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class SurveyResponse {
-    private List<SurveyDTO> surveys;
-
-    public SurveyResponse(List<SurveyDTO> surveys) {
-        this.surveys = surveys;
-    }
-
-    public List<SurveyDTO> getSurveys() {
-        return surveys;
-    }
-
-    public void setSurveys(List<SurveyDTO> surveys) {
-        this.surveys = surveys;
-    }
+    private final List<SurveyDTO> surveys;
 }

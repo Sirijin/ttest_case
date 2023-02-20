@@ -1,25 +1,21 @@
-package com.example.demo.convertor;
+package com.example.demo.mapper;
 
 import com.example.demo.dto.QuestionDTO;
 import com.example.demo.model.Question;
 import com.example.demo.repository.SurveyRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class QuestionConvertor {
     private final SurveyRepo surveyRepo;
-
-    @Autowired
-    public QuestionConvertor(SurveyRepo surveyRepo) {
-        this.surveyRepo = surveyRepo;
-    }
 
     public Question convertToQuestion(QuestionDTO questionDTO) {
         Question question = new Question();
         question.setText(questionDTO.getText());
-        question.setSome_order(questionDTO.getSome_order());
-        question.setSurvey(surveyRepo.findById(questionDTO.getSurvey_id()).orElseThrow(() -> new RuntimeException("not found")));
+        question.setSomeOrder(questionDTO.getSomeOrder());
+        question.setSurvey(surveyRepo.findById(questionDTO.getSurveyId()).orElseThrow(() -> new RuntimeException("not found")));
 
         return question;
     }
@@ -27,8 +23,8 @@ public class QuestionConvertor {
     public QuestionDTO convertToDTO(Question question) {
         QuestionDTO questionDTO = new QuestionDTO();
         questionDTO.setText(question.getText());
-        questionDTO.setSome_order(question.getSome_order());
-        questionDTO.setSurvey_id(question.getSurvey().getId());
+        questionDTO.setSomeOrder(question.getSomeOrder());
+        questionDTO.setSurveyId(question.getSurvey().getId());
 
         return questionDTO;
     }

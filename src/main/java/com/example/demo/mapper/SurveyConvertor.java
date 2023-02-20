@@ -1,4 +1,4 @@
-package com.example.demo.convertor;
+package com.example.demo.mapper;
 
 import com.example.demo.dto.QuestionDTO;
 import com.example.demo.dto.SurveyDTO;
