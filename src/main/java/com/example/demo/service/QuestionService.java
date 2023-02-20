@@ -1,52 +1,48 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.QuestionDTO;
+import com.example.demo.mapper.QuestionConvertor;
 import com.example.demo.model.Question;
 import com.example.demo.repository.QuestionRepo;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class QuestionService {
     private final QuestionRepo questionRepo;
+    private final QuestionConvertor questionConvertor;
     private final SurveyService surveyService;
-    private final ModelMapper modelMapper;
 
-    @Autowired
-    public QuestionService(QuestionRepo questionRepo, SurveyService surveyService, ModelMapper modelMapper) {
-        this.questionRepo = questionRepo;
-        this.surveyService = surveyService;
-        this.modelMapper = modelMapper;
-    }
-
-    public List<Question> findAll() {
-        return questionRepo.findAll();
+    public List<QuestionDTO> findAll() {
+        return questionRepo.findAll().stream().map(questionConvertor::convertToQuestionDTO).collect(Collectors.toList());
     }
 
     @Transactional
-    public void delete(int id) {
+    public void delete(long id) {
         questionRepo.deleteById(id);
     }
 
     @Transactional
-    public void save(Question question) {
-//        enrichQuestion(question);
-        questionRepo.save(question);
+    public QuestionDTO save(QuestionDTO questionDTO) {
+        Question question = questionConvertor.convertToQuestion(questionDTO);
+        question.setSurvey(surveyService.findById(question.getSurvey().getId()));
+        return questionConvertor.convertToQuestionDTO(questionRepo.save(question));
     }
 
     @Transactional
-    public void update(int id, Question questionToEdit) {
-        questionToEdit.setId(id);
-        enrichQuestion(questionToEdit);
-        questionRepo.save(questionToEdit);
-    }
-
-    private void enrichQuestion(Question question) {
-        question.setSurvey(surveyService.findByName(question.getSurvey().getName()).get());
+    public Question update(long id, QuestionDTO updatedQuestionDTO) {
+        if (questionRepo.existsById(id)) {
+            Question question = questionConvertor.convertToQuestion(id, updatedQuestionDTO);
+            question.setSurvey(surveyService.findById(updatedQuestionDTO.getSurveyId()));
+            return questionRepo.save(question);
+        } else {
+            throw new RuntimeException("There is no question with this id");
+        }
     }
 }

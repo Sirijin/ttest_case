@@ -1,57 +1,63 @@
 package com.example.demo.controller;
 
-import com.example.demo.convertor.QuestionConvertor;
 import com.example.demo.dto.QuestionDTO;
-import com.example.demo.dto.QuestionResponse;
-import com.example.demo.model.Question;
-import com.example.demo.repository.SurveyRepo;
+import com.example.demo.mapper.QuestionConvertor;
 import com.example.demo.service.QuestionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.stream.Collectors;
+import static com.example.demo.controller.ErrorHandler.bindingHandle;
+
 
 @RestController
 @RequestMapping("/question")
+@RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
-    private final SurveyRepo surveyRepo;
     private final QuestionConvertor questionConvertor;
 
-    @Autowired
-    public QuestionController(QuestionService questionService, SurveyRepo surveyRepo, QuestionConvertor questionConvertor) {
-        this.questionService = questionService;
-        this.surveyRepo = surveyRepo;
-        this.questionConvertor = questionConvertor;
-    }
 
     @GetMapping
-    public QuestionResponse findAll() {
-        return new QuestionResponse(questionService.findAll().stream().map(questionConvertor::convertToDTO).collect(Collectors.toList()));
+    public ResponseEntity<?> getQuestions() {
+        try {
+            return ResponseEntity.ok(questionService.findAll());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @PostMapping("/add")
-    public ResponseEntity<HttpStatus> add(@RequestBody QuestionDTO questionDTO) {
-        Question questionToAdd = questionConvertor.convertToQuestion(questionDTO);
-        questionService.save(questionToAdd);
-        return ResponseEntity.ok(HttpStatus.OK);
+    public ResponseEntity<?> addNewQuestion(@RequestBody @Valid QuestionDTO questionDTO, BindingResult bindingResult) {
+        try {
+            bindingHandle(bindingResult);
+            return ResponseEntity.ok(questionService.save(questionDTO));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @PutMapping("/edit/{id}")
-    public ResponseEntity<HttpStatus> edit(@RequestBody QuestionDTO questionDTO, @PathVariable("id") int id) {
-        Question questionToEdit = questionConvertor.convertToQuestion(questionDTO);
-        questionService.update(id, questionToEdit);
-        return ResponseEntity.ok(HttpStatus.OK);
+    public ResponseEntity<?> editExistingQuestion(@RequestBody @Valid QuestionDTO questionDTO,
+                                                  @PathVariable("id") int id, BindingResult bindingResult) {
+        try {
+            bindingHandle(bindingResult);
+            return ResponseEntity.ok(questionService.update(id, questionDTO));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id) {
-        questionService.delete(id);
-        return ResponseEntity.ok(HttpStatus.OK);
+    public ResponseEntity<?> deleteQuestion(@PathVariable("id") int id) {
+        try {
+            questionService.delete(id);
+            return ResponseEntity.ok(HttpStatus.OK);
+        } catch (Exception e) {
+            return null;
+        }
     }
-
-
-
 }

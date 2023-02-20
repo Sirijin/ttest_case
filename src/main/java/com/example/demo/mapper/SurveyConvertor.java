@@ -1,4 +1,4 @@
-package com.example.demo.convertor;
+package com.example.demo.mapper;
 
 import com.example.demo.dto.QuestionDTO;
 import com.example.demo.dto.SurveyDTO;
@@ -22,7 +22,7 @@ public class SurveyConvertor {
         surveyDTO.setName(survey.getName());
 
         for (Question question : survey.getQuestions()) {
-            questionDTOS.add(questionConvertor.convertToDTO(question));
+            questionDTOS.add(questionConvertor.convertToQuestionDTO(question));
         }
         surveyDTO.setQuestions(questionDTOS);
         return surveyDTO;
@@ -30,6 +30,17 @@ public class SurveyConvertor {
 
     public Survey convertToSurvey(SurveyDTO surveyDTO) {
         Survey survey = new Survey();
+        return fillSurveyQuestions(surveyDTO, survey);
+    }
+
+    public Survey convertToSurvey(long id, SurveyDTO surveyDTO) {
+        Survey survey = new Survey();
+        survey.setId(id);
+
+        return fillSurveyQuestions(surveyDTO, survey);
+    }
+
+    private Survey fillSurveyQuestions(SurveyDTO surveyDTO, Survey survey) {
         List<Question> questions = new ArrayList<>();
 
         survey.setName(surveyDTO.getName());

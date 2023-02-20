@@ -1,6 +1,5 @@
 package com.example.demo.dto;
 
-import com.example.demo.model.Question;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +13,6 @@ import java.util.List;
 public class SurveyDTO {
     @NotNull
     private String name;
+    @NotNull
     private List<QuestionDTO> questions;
 }

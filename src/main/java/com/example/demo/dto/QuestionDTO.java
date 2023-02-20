@@ -1,6 +1,5 @@
 package com.example.demo.dto;
 
-import com.example.demo.model.Survey;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,9 +10,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class QuestionDTO {
     @NotNull
-    private int survey_id;
+    private Long surveyId;
     @NotNull
     private String text;
     @NotNull
-    private int some_order;
+    private Integer someOrder;
 }

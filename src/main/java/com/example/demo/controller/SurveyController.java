@@ -1,66 +1,74 @@
 package com.example.demo.controller;
 
-import com.example.demo.convertor.SurveyConvertor;
 import com.example.demo.dto.SurveyDTO;
-import com.example.demo.dto.SurveyResponse;
-import com.example.demo.model.Survey;
-import com.example.demo.service.QuestionService;
 import com.example.demo.service.SurveyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.stream.Collectors;
+import static com.example.demo.controller.ErrorHandler.bindingHandle;
 
 @RestController
 @RequestMapping("/survey")
 @RequiredArgsConstructor
 public class SurveyController {
     private final SurveyService surveyService;
-    private final QuestionService questionService;
-    private final ModelMapper modelMapper;
-    private final SurveyConvertor surveyConvertor;
 
 
-    @GetMapping
-    public SurveyResponse findAll(@RequestParam(value = "sortByDate", required = false) boolean sortByDate,
-                                  @RequestParam(value = "sortByName", required = false) boolean sortByName,
-                                  @RequestParam(value = "sortByActive", required = false) boolean sortByActive) {
-        if (!sortByDate && !sortByName) {
-            return new SurveyResponse(surveyService.findAll(sortByActive).stream().map(surveyConvertor::convertToDTO).collect(Collectors.toList()));
-        } else if (sortByDate && !sortByName) {
-            return new SurveyResponse(surveyService.findWithSortByDate(sortByActive).stream().map(surveyConvertor::convertToDTO).collect(Collectors.toList()));
-        } else if (!sortByDate) {
-            return new SurveyResponse(surveyService.findWithSortByName(sortByActive).stream().map(surveyConvertor::convertToDTO).collect(Collectors.toList()));
-        } else {
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getSurvey(@PathVariable Long id) {
+
+        try {
+            return ResponseEntity.ok(surveyService.getSurvey(id));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @GetMapping()
+    public ResponseEntity<?> getSurveyList(@RequestParam(value = "page", defaultValue = "0", required = false) int page,
+                                           @RequestParam(value = "size", defaultValue = "2", required = false) int size,
+                                           @RequestParam(value = "sort", defaultValue = "id", required = false) String sort,
+                                           @RequestParam(value = "direction", defaultValue = "ASC", required = false) String direction) {
+        try {
+            return ResponseEntity.ok(surveyService.getSurveyList(PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort))));
+        } catch (Exception e) {
             return null;
         }
     }
 
     @PostMapping("/add")
-    public ResponseEntity<HttpStatus> add(@RequestBody SurveyDTO surveyDTO) {
-        Survey surveyToAdd = surveyConvertor.convertToSurvey(surveyDTO);
-        surveyService.save(surveyToAdd);
-
-        return ResponseEntity.ok(HttpStatus.OK);
+    public ResponseEntity<?> addNewSurvey(@RequestBody @Valid SurveyDTO surveyDTO, BindingResult bindingResult) {
+        try {
+            bindingHandle(bindingResult);
+            return ResponseEntity.ok(surveyService.save(surveyDTO));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @PutMapping("/edit/{id}")
-    public ResponseEntity<HttpStatus> edit(@RequestBody SurveyDTO surveyDTO, @PathVariable("id") int id) {
-        Survey surveyToEdit = surveyConvertor.convertToSurvey(surveyDTO);
-        surveyService.update(id, surveyToEdit);
-        return ResponseEntity.ok(HttpStatus.OK);
+    public ResponseEntity<?> editExistingSurvey(@RequestBody @Valid SurveyDTO surveyDTO,
+                                                @PathVariable("id") int id, BindingResult bindingResult) {
+        try {
+            bindingHandle(bindingResult);
+            return ResponseEntity.ok(surveyService.update(id, surveyDTO));
+        } catch (Exception e) {
+            return null;
+        }
     }
-
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<HttpStatus> delete(@RequestBody Survey survey, @PathVariable("id") int id) {
-        surveyService.delete(id);
-        return ResponseEntity.ok(HttpStatus.OK);
+    public ResponseEntity<?> deleteSurvey(@PathVariable("id") int id) {
+        try {
+            surveyService.delete(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return null;
+        }
     }
-
-
-
 }
