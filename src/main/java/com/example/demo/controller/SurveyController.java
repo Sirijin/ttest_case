@@ -6,9 +6,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.NoSuchElementException;
 
 import static com.example.demo.controller.ErrorHandler.bindingHandle;
 
@@ -24,8 +28,10 @@ public class SurveyController {
 
         try {
             return ResponseEntity.ok(surveyService.getSurvey(id));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -36,39 +42,48 @@ public class SurveyController {
                                            @RequestParam(value = "direction", defaultValue = "ASC", required = false) String direction) {
         try {
             return ResponseEntity.ok(surveyService.getSurveyList(PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort))));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PostMapping("/add")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER')")
     public ResponseEntity<?> addNewSurvey(@RequestBody @Valid SurveyDTO surveyDTO, BindingResult bindingResult) {
         try {
             bindingHandle(bindingResult);
             return ResponseEntity.ok(surveyService.save(surveyDTO));
         } catch (Exception e) {
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PutMapping("/edit/{id}")
-    public ResponseEntity<?> editExistingSurvey(@RequestBody @Valid SurveyDTO surveyDTO,
-                                                @PathVariable("id") int id, BindingResult bindingResult) {
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER')")
+    public ResponseEntity<?> editExistingSurvey(@RequestBody @Valid SurveyDTO surveyDTO, BindingResult bindingResult,
+                                                @PathVariable("id") Long id) {
         try {
             bindingHandle(bindingResult);
             return ResponseEntity.ok(surveyService.update(id, surveyDTO));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER')")
     public ResponseEntity<?> deleteSurvey(@PathVariable("id") int id) {
         try {
             surveyService.delete(id);
             return ResponseEntity.ok().build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

@@ -8,14 +8,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class QuestionConvertor {
+public class QuestionConverter {
     private final SurveyRepo surveyRepo;
 
     public Question convertToQuestion(QuestionDTO questionDTO) {
         Question question = new Question();
-        question.setText(questionDTO.getText());
-        question.setSomeOrder(questionDTO.getSomeOrder());
-        question.setSurvey(surveyRepo.findById(questionDTO.getSurveyId()).orElseThrow(() -> new RuntimeException("not found")));
+        extracted(questionDTO, question);
 
         return question;
     }
@@ -32,10 +30,14 @@ public class QuestionConvertor {
     public Question convertToQuestion(long id, QuestionDTO questionDTO) {
         Question question = new Question();
         question.setId(id);
+        extracted(questionDTO, question);
+
+        return question;
+    }
+
+    private void extracted(QuestionDTO questionDTO, Question question) {
         question.setText(questionDTO.getText());
         question.setSomeOrder(questionDTO.getSomeOrder());
         question.setSurvey(surveyRepo.findById(questionDTO.getSurveyId()).orElseThrow(() -> new RuntimeException("not found")));
-
-        return question;
     }
 }

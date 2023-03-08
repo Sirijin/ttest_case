@@ -16,15 +16,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class QuestionConvertorTest {
+class QuestionConverterTest {
 
     @Mock
     private SurveyRepo surveyRepo;
-    private QuestionConvertor underTest;
+    private QuestionConverter underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new QuestionConvertor(surveyRepo);
+        underTest = new QuestionConverter(surveyRepo);
     }
 
     @Test

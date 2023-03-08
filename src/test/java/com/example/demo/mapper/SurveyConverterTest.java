@@ -17,15 +17,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-class SurveyConvertorTest {
+class SurveyConverterTest {
 
     @Mock
-    private QuestionConvertor questionConvertor;
-    private SurveyConvertor underTest;
+    private QuestionConverter questionConverter;
+    private SurveyConverter underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new SurveyConvertor(questionConvertor);
+        underTest = new SurveyConverter(questionConverter);
     }
 
     @Test

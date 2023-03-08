@@ -12,8 +12,8 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class SurveyConvertor {
-    private final QuestionConvertor questionConvertor;
+public class SurveyConverter {
+    private final QuestionConverter questionConverter;
 
     public SurveyDTO convertToDTO(Survey survey) {
         SurveyDTO surveyDTO = new SurveyDTO();
@@ -22,7 +22,7 @@ public class SurveyConvertor {
         surveyDTO.setName(survey.getName());
 
         for (Question question : survey.getQuestions()) {
-            questionDTOS.add(questionConvertor.convertToQuestionDTO(question));
+            questionDTOS.add(questionConverter.convertToQuestionDTO(question));
         }
         surveyDTO.setQuestions(questionDTOS);
         return surveyDTO;
@@ -46,7 +46,7 @@ public class SurveyConvertor {
         survey.setName(surveyDTO.getName());
 
         for (QuestionDTO questionDTO : surveyDTO.getQuestions()) {
-            questions.add(questionConvertor.convertToQuestion(questionDTO));
+            questions.add(questionConverter.convertToQuestion(questionDTO));
         }
         survey.setQuestions(questions);
         return survey;
