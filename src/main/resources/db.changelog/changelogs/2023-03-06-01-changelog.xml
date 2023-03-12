@@ -65,11 +65,12 @@
                                  baseColumnNames="user_id"
                                  referencedTableName="user"
                                  referencedColumnNames="id"
-                                 constraintName="fk_user"/>
+                                 constraintName="fk_user_role_user"/>
         <addForeignKeyConstraint baseTableName="user_role"
                                  baseColumnNames="role_id"
                                  referencedTableName="role"
                                  referencedColumnNames="id"
-                                 constraintName="fk_role"/>
+                                 constraintName="fk_user_role_role"/>
     </changeSet>
+
 </databaseChangeLog>

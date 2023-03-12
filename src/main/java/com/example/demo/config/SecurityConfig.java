@@ -2,7 +2,6 @@ package com.example.demo.config;
 
 import com.example.demo.service.PersonDetailsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -33,13 +32,18 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers(
                         new AntPathRequestMatcher("/auth/login"),
-                        new AntPathRequestMatcher("/auth/register"),
+                        new AntPathRequestMatcher("/auth/registration"),
                         new AntPathRequestMatcher("/error")
                 ).permitAll()
                 .requestMatchers(
-                        new AntPathRequestMatcher("/api/items"),
-                        new AntPathRequestMatcher("/api/items/**")
-                ).hasRole("ADMIN")
+                        new AntPathRequestMatcher("/survey"),
+                        new AntPathRequestMatcher("/question")
+                ).hasRole("USER")
+                .requestMatchers(
+                        new AntPathRequestMatcher("/admin/**"),
+                        new AntPathRequestMatcher("/survey/**"),
+                        new AntPathRequestMatcher("/question/**")
+                ).hasAnyRole("ADMIN", "SUPERUSER")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -65,7 +69,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(personDetailsService).passwordEncoder(getPasswordEncoder());
     }

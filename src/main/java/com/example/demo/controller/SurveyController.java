@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +49,6 @@ public class SurveyController {
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER')")
     public ResponseEntity<?> addNewSurvey(@RequestBody @Valid SurveyDTO surveyDTO, BindingResult bindingResult) {
         try {
             bindingHandle(bindingResult);
@@ -61,7 +59,6 @@ public class SurveyController {
     }
 
     @PutMapping("/edit/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER')")
     public ResponseEntity<?> editExistingSurvey(@RequestBody @Valid SurveyDTO surveyDTO, BindingResult bindingResult,
                                                 @PathVariable("id") Long id) {
         try {
@@ -75,7 +72,6 @@ public class SurveyController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERUSER')")
     public ResponseEntity<?> deleteSurvey(@PathVariable("id") int id) {
         try {
             surveyService.delete(id);
